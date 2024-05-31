@@ -139,7 +139,7 @@ void R_LightGetHSV(int r, int g, int b, int* h, int* s, int* v) {
 // Set RGB values based on given HSV
 //
 
-void R_LightGetRGB(int h, int s, int v, int* r, int* g, int* b) {
+void R_LightGetRGB(int h, int s, int v, byte* r, byte* g, byte* b) {
 	float x = 0.0f;
 	float j = 0.0f;
 	float i = 0.0f;
@@ -225,7 +225,7 @@ void R_SetLightFactor(float lightfactor) {
 
 			v = MIN((int)((float)v * f), 255);
 
-			R_LightGetRGB(h, s, v, (int*)&light->base_r, (int*)&light->base_g, (int*)&light->base_b);
+			R_LightGetRGB(h, s, v, (byte*)&light->base_r, (byte*)&light->base_g, (byte*)&light->base_b);
 		}
 		else {
 			light->base_r = light->base_g = light->base_b = MIN((int)((float)l * f), 255);

@@ -171,7 +171,7 @@ static int SC_SetData(byte* data, const scdatatable_t* table) {
 				*(int*)pointer = sc_parser.getint();
 				break;
 			case 'b':
-				*(int*)pointer = true;
+				*(boolean*)pointer = true;
 				break;
 			case 'c':
 				sc_parser.compare("="); // expect a '='
