@@ -151,6 +151,10 @@ void NetUpdate(void) {
 		ticcmd_t cmd;
 
 		I_StartTic();
+#ifdef __ANDROID__
+		void Android_SendKeys( void );
+		Android_SendKeys();
+#endif
 		D_ProcessEvents();
 		//if (maketic - gameticdiv >= BACKUPTICS/2-1)
 		//    break;          // can't hold any more

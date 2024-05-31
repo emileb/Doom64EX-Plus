@@ -260,8 +260,16 @@ ticcmd_t* I_BaseTiccmd(void) {
  * @note The returning value MUST be freed by the caller.
  */
 
+#ifdef __ANDROID__
+extern const char *userFilesPath_c;
+#endif
 char* I_GetUserDir(void) 
 {
+#ifdef __ANDROID__
+	char * path = malloc(PATH_MAX);
+	snprintf(path, PATH_MAX, "%s/", userFilesPath_c);
+	return path;
+#endif
 	return GetBasePath();
 }
 
@@ -316,6 +324,15 @@ char* I_FindDataFile(char* file) {
 		if (I_FileExists(path))
 			return path;
 	}
+
+#ifdef __ANDROID__
+    if ((dir = "./")) {
+        snprintf(path, 511, "%s%s", dir, file);
+
+        if (I_FileExists(path))
+            return path;
+    }
+#endif
 
 #ifdef __APPLE__
 	if ((dir = SDL_GetBasePath())) {
@@ -461,6 +478,11 @@ void I_Quit(void) {
 // I_Printf
 //
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO,"JNITouchControlsUtils", __VA_ARGS__))
+#endif
+
 void I_Printf(const char* string, ...) {
 	char buff[1024];
 	va_list    va;
@@ -470,6 +492,9 @@ void I_Printf(const char* string, ...) {
 	va_start(va, string);
 	vsprintf(buff, string, va);
 	va_end(va);
+#ifdef __ANDROID__
+	LOGI("D64: %s", buff);
+#endif
 	printf("%s", buff);
 	if (console_initialized) {
 		CON_AddText(buff);

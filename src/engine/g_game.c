@@ -624,6 +624,10 @@ void G_ReloadDefaults(void) {
 
 CVAR_EXTERNAL(p_autorun);
 
+#ifdef __ANDROID__
+void Mobile_IN_Move(ticcmd_t* cmd );
+#endif
+
 //
 // G_BuildTiccmd
 // Builds a ticcmd from all of the available inputs
@@ -865,6 +869,10 @@ void G_BuildTiccmd(ticcmd_t* cmd) {
 
 	cmd->forwardmove += forward;
 	cmd->sidemove += side;
+
+#ifdef __ANDROID__
+	Mobile_IN_Move( cmd );
+#endif
 
 	// special buttons
 	if (sendpause) {

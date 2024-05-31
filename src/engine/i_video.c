@@ -126,8 +126,17 @@ void I_InitScreen(void) {
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 0);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 0);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 0);
+#ifdef __ANDROID__
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+#else
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+#endif	
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#ifdef __ANDROID__
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#endif
 
 	flags |= SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI;
 
@@ -138,6 +147,10 @@ void I_InitScreen(void) {
 	if (InWindowBorderless) {
 		flags |= SDL_WINDOW_BORDERLESS;
 	}
+
+#ifdef __ANDROID__
+    flags = SDL_WINDOW_OPENGL;
+#endif
 
 	sprintf(title, "Doom64EX+ - Version Date: %s", version_date);
 	window = SDL_CreateWindow(title,
@@ -156,6 +169,10 @@ void I_InitScreen(void) {
 		I_Error("I_InitScreen: Failed to create OpenGL context");
 		return;
 	}
+#ifdef __ANDROID__
+    void initialize_gl4es( void );
+    initialize_gl4es();
+#endif
 }
 
 //
