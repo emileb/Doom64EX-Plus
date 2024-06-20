@@ -119,7 +119,9 @@ void WIPE_FadeScreen(int fadetics) {
 		// display screen overlay
 		//
 		color = D_RGBA(wipeFadeAlpha, wipeFadeAlpha, wipeFadeAlpha, 0xff);
-
+#ifdef __ANDROID__
+		dglBindTexture(GL_TEXTURE_2D, wipeMeltTexture);
+#endif
 		dglSetVertexColor(v, color, 4);
 		GL_Draw2DQuad(v, 1);
 

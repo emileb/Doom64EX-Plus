@@ -6,7 +6,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := doom64ExPlus
 
-LOCAL_CFLAGS := -O0 -g -DENGINE_NAME=\"doom64\" -Dstricmp=strcasecmp -fsigned-char -DDOOM64EX
+LOCAL_CFLAGS := -DENGINE_NAME=\"doom64\" -Dstricmp=strcasecmp -fsigned-char -DDOOM64EX
 
 
 LOCAL_C_INCLUDES :=     $(SDL_INCLUDE_PATHS)  \
