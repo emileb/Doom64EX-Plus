@@ -515,11 +515,11 @@ dtexture GL_ScreenToTexture(void) {
 	dglTexImage2D(
 		GL_TEXTURE_2D,
 		0,
-		GL_RGB8,
+		GL_RGBA,
 		width,
 		height,
 		0,
-		GL_RGB,
+		GL_RGBA,
 		GL_UNSIGNED_BYTE,
 		0
 	);
