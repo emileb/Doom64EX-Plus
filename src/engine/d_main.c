@@ -108,6 +108,8 @@ boolean        rundemo4 = false;    // run demo lump #4?
 int             gameflags = 0;
 int             compatflags = 0;
 
+char           datafolder[PATH_MAX];
+
 void D_CheckNetGame(void);
 void D_ProcessEvents(void);
 void G_BuildTiccmd(ticcmd_t* cmd);
@@ -863,6 +865,14 @@ static void D_Init(void) {
 		autostart = true;
 		startmap = datoi(myargv[p + 1]);
 		gameaction = ga_newgame;
+	}
+
+	p = M_CheckParm("-datafolder");
+	if (p && p < myargc - 1) {
+		strcpy(datafolder, myargv[p + 1]);
+	}
+	else {
+		datafolder[0] = 0;
 	}
 
 	// set server cvars

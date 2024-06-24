@@ -304,7 +304,7 @@ char* I_GetUserFile(char* file) {
 
 	return path;
 }
-
+extern char datafolder[];
 /**
  * @brief Find a regular read-only data file.
  *
@@ -325,13 +325,20 @@ char* I_FindDataFile(char* file) {
 			return path;
 	}
 
+	I_Printf("df = %s\n", datafolder);
 #ifdef __ANDROID__
-    if ((dir = "./")) {
-        snprintf(path, 511, "%s%s", dir, file);
+    dir = "./";
+	snprintf(path, 511, "%s%s", dir, file);
 
-        if (I_FileExists(path))
-            return path;
-    }
+	if (I_FileExists(path))
+		return path;
+
+	dir = datafolder;
+	snprintf(path, 511, "%s%s", dir, file);
+
+	if (I_FileExists(path))
+		return path;
+
 #endif
 
 #ifdef __APPLE__
