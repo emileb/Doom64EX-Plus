@@ -19,9 +19,6 @@ LOCAL_C_INCLUDES :=     $(SDL_INCLUDE_PATHS)  \
                         $(TOP_DIR)\AudioLibs_OpenTouch\fluidsynth\include\
 
 
-#  ./mobile/game_interface.c \
-
-
 LOCAL_SRC_FILES =   ../../../../Clibs_OpenTouch/idtech1/android_jni.cpp \
                     ../../../../Clibs_OpenTouch/idtech1/touch_interface.cpp \
                    ./mobile/game_interface.c \
