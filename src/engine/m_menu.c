@@ -3836,9 +3836,10 @@ void M_QuickSave(void)
 
 void M_QuickLoad(void)
 {
-	if (M_FileExists(QUICKSAVEFILE))
+	char* filename = P_GetSaveGameName(QUICKSAVESLOT);
+	if (M_FileExists(filename))
 	{
-		G_LoadGame(QUICKSAVEFILE);
+		G_LoadGame(filename);
 	}
 	else
 	{
