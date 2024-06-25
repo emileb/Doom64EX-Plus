@@ -267,7 +267,8 @@ char* I_GetUserDir(void)
 {
 #ifdef __ANDROID__
 	char * path = malloc(PATH_MAX);
-	snprintf(path, PATH_MAX, "%s/", userFilesPath_c);
+	snprintf(path, PATH_MAX, "%s/D64/", userFilesPath_c);
+	mkdir(path, 0777);
 	return path;
 #endif
 	return GetBasePath();
