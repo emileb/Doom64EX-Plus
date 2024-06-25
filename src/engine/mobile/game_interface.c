@@ -13,17 +13,16 @@
 int ANDROID_SAMPLECOUNT = 1024;
 
 // FIFO STUFF ////////////////////
-// Copied from FTEQW, I don't know if this is thread safe, but it's safe enough for a game :)
+
 #define EVENTQUEUELENGTH 128
+
 struct eventlist_s
 {
-
 	int scancode, unicode,state;
-
 } eventlist[EVENTQUEUELENGTH];
 
-volatile int events_avail; /*volatile to make sure the cc doesn't try leaving these cached in a register*/
-volatile int events_used;
+volatile int events_avail = 0; /*volatile to make sure the cc doesn't try leaving these cached in a register*/
+volatile int events_used = 0;
 
 static struct eventlist_s *in_newevent(void)
 {
@@ -38,8 +37,30 @@ static void in_finishevent(void)
 }
 ///////////////////////
 
+struct eventlistcmd_s
+{
+	char cmd[256];
+} eventlistcmd[EVENTQUEUELENGTH];
 
-int PortableKeyEvent(int state, int code,int unicode){
+volatile int events_cmd_avail = 0; /*volatile to make sure the cc doesn't try leaving these cached in a register*/
+volatile int events_cmd_used = 0;
+
+static struct eventlistcmd_s *in_newevent_cmd(void)
+{
+	if (events_cmd_avail >= events_cmd_used + EVENTQUEUELENGTH)
+		return NULL;
+	return &eventlistcmd[events_cmd_avail & (EVENTQUEUELENGTH-1)];
+}
+
+static void in_finishevent_cmd(void)
+{
+	events_cmd_avail++;
+}
+
+///////////////////////
+
+int PortableKeyEvent(int state, int code,int unicode)
+{
 
 	//LOGI("PortableKeyEvent %d %d",state,code);
 	struct eventlist_s *ev = in_newevent();
@@ -111,22 +132,22 @@ void PortableAction(int state, int action)
 		switch (action)
 		{
 		case PORT_ACT_LEFT:
-
+			state ?	PortableCommand("+left") : PortableCommand("-left");
 			break;
 		case PORT_ACT_RIGHT:
-
+			state ?	PortableCommand("+right") : PortableCommand("-right");
 			break;
 		case PORT_ACT_FWD:
-
+			state ?	PortableCommand("+forward") : PortableCommand("-forward");
 			break;
 		case PORT_ACT_BACK:
-
+			state ?	PortableCommand("+back") : PortableCommand("-back");
 			break;
 		case PORT_ACT_MOVE_LEFT:
-
+			state ?	PortableCommand("+strafeleft") : PortableCommand("-strafeleft");
 			break;
 		case PORT_ACT_MOVE_RIGHT:
-
+			state ?	PortableCommand("+straferight") : PortableCommand("-straferight");
 			break;
 		case PORT_ACT_USE:
 			state ?	PortableCommand("+use") : PortableCommand("-use");
@@ -167,34 +188,52 @@ void PortableAction(int state, int action)
 
 			break;
 		case PORT_ACT_WEAP1:
-
+			if(state)
+				PortableCommand("weapon 1");
 			break;
 		case PORT_ACT_WEAP2:
-
+			if(state)
+				PortableCommand("weapon 2");
 			break;
 		case PORT_ACT_WEAP3:
-
+			if(state)
+				PortableCommand("weapon 3");
 			break;
 		case PORT_ACT_WEAP4:
-
+			if(state)
+				PortableCommand("weapon 4");
 			break;
 		case PORT_ACT_WEAP5:
-
+			if(state)
+				PortableCommand("weapon 5");
 			break;
 		case PORT_ACT_WEAP6:
-
+			if(state)
+				PortableCommand("weapon 6");
 			break;
 		case PORT_ACT_WEAP7:
-
+			if(state)
+				PortableCommand("weapon 7");
 			break;
 		case PORT_ACT_WEAP8:
-
+			if(state)
+				PortableCommand("weapon 8");
+			break;
+		case PORT_ACT_WEAP9:
+			if(state)
+				PortableCommand("weapon 9");
+			break;
+		case PORT_ACT_WEAP0:
+			if(state)
+				PortableCommand("weapon 10");
 			break;
         case PORT_ACT_QUICKSAVE:
-
+			if(state)
+				PortableCommand("quicksave");
             break;
         case PORT_ACT_QUICKLOAD:
-
+			if(state)
+				PortableCommand("quickload");
             break;
         case PORT_ACT_GAMMA:
 
@@ -281,9 +320,14 @@ void PortableAutomapControl(float zoom, float x, float y)
 static const char * quickCommand = 0;
 void PortableCommand(const char * cmd)
 {
-    static char cmdBuffer[256];
-    snprintf(cmdBuffer, 256, "%s", cmd);
-    quickCommand = cmdBuffer;
+	struct eventlistcmd_s *c = in_newevent_cmd();
+
+	if(!c)
+		return;
+
+    snprintf(c->cmd, 256, "%s", cmd);
+
+	in_finishevent_cmd();
 }
 
 void PortableInit(int argc,const char ** argv){
@@ -358,10 +402,13 @@ void Mobile_IN_Move(ticcmd_t* cmd )
         cmd->angleturn += look_yaw_joy * 1000;
     }
 
-    if(quickCommand)
+    while (events_cmd_used != events_cmd_avail)
     {
-        G_ExecuteCommand(quickCommand);
-        quickCommand = NULL;
+        struct eventlistcmd_s *ev = &eventlistcmd[events_cmd_used & (EVENTQUEUELENGTH-1)];
+
+        G_ExecuteCommand(ev->cmd);
+
+        events_cmd_used++;
     }
 
 /*
