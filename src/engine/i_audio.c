@@ -1238,7 +1238,7 @@ void I_InitSequencer(void) {
         }
     }
 
-    if (!sffound && (sfpath = I_FindDataFile("doomsnd.sf2"))) {
+    if (!sffound && (sfpath = I_FindDataFile("../audiopack/doomsnd.sf2"))) {
         I_Printf("Found SoundFont %s\n", sfpath);
         doomseq.sfont_id = fluid_synth_sfload(doomseq.synth, sfpath, 1);
 
