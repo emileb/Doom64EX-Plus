@@ -70,7 +70,7 @@
 #include "i_xinput.h"
 #endif
 
-CVAR(i_interpolateframes, 1);
+CVAR(i_interpolateframes, 0);
 CVAR(v_accessibility, 0);
 
 // Gibbon - hack from curl to deal with some crap
