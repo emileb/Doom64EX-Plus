@@ -46,7 +46,7 @@
 #define MAX_CONSOLE_LINES       256//must be power of 2
 #define CONSOLETEXT_MASK        (MAX_CONSOLE_LINES-1)
 #define CMD_HISTORY_SIZE        64
-#define CONSOLE_Y               160
+#define CONSOLE_Y               115
 
 typedef struct {
 	int    len;
