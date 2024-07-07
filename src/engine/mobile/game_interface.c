@@ -7,6 +7,9 @@
 #include "g_controls.h"
 #include <pthread.h>
 
+#include "SDL.h"
+#include "SDL_keycode.h"
+
 #include "game_interface.h"
 
 //used by i_sound.c
@@ -235,8 +238,11 @@ void PortableAction(int state, int action)
 			if(state)
 				PortableCommand("quickload");
             break;
-        case PORT_ACT_GAMMA:
-
+        case PORT_ACT_CONSOLE:
+			if (state)
+				SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_GRAVE);
+			else
+				SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_GRAVE);
             break;
 		}
 
@@ -410,25 +416,6 @@ void Mobile_IN_Move(ticcmd_t* cmd )
 
         events_cmd_used++;
     }
-
-/*
-	if (newweapon != wp_nochange)
-	{
-		const player_t *player = &players[consoleplayer];
-
-		if (newweapon == wp_shotgun  &&
-				player->weaponowned[wp_supershotgun] &&
-				(!player->weaponowned[wp_shotgun] ||
-						player->readyweapon == wp_shotgun ||
-						(player->readyweapon != wp_supershotgun &&
-								P_WeaponPreferred(wp_supershotgun, wp_shotgun))))
-			newweapon = wp_supershotgun;
-
-		cmd->buttons |= BT_CHANGE;
-		cmd->buttons |= newweapon<<BT_WEAPONSHIFT;
-		newweapon = wp_nochange;
-	}
- */
 }
 
 uint64_t SDLCALL SDL_GetTicks64(void)
