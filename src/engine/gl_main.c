@@ -665,6 +665,9 @@ void GL_Init(void) {
     }
 
     gl_has_combiner = (has_GL_ARB_texture_env_combine | has_GL_EXT_texture_env_combine);
+#ifdef __ANDROID__
+    gl_has_combiner = 0;
+#endif
 
     if(!gl_has_combiner) {
         CON_Warnf("Texture combiners not supported...\n");
