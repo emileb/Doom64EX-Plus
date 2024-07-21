@@ -489,6 +489,9 @@ void I_Quit(void) {
 #ifdef __ANDROID__
 #include <android/log.h>
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO,"JNITouchControlsUtils", __VA_ARGS__))
+
+#include "LogWritter.h"
+
 #endif
 
 void I_Printf(const char* string, ...) {
@@ -502,6 +505,7 @@ void I_Printf(const char* string, ...) {
 	va_end(va);
 #ifdef __ANDROID__
 	LOGI("D64: %s", buff);
+	LogWritter_Write(buff);
 #endif
 	printf("%s", buff);
 	if (console_initialized) {
