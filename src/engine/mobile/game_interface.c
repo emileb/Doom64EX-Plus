@@ -12,9 +12,6 @@
 
 #include "game_interface.h"
 
-//used by i_sound.c
-int ANDROID_SAMPLECOUNT = 1024;
-
 // FIFO STUFF ////////////////////
 
 #define EVENTQUEUELENGTH 128
@@ -61,6 +58,8 @@ static void in_finishevent_cmd(void)
 }
 
 ///////////////////////
+
+extern int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
 int PortableKeyEvent(int state, int code,int unicode)
 {
@@ -251,7 +250,7 @@ void PortableAction(int state, int action)
 
 // =================== FORWARD and SIDE MOVMENT ==============
 
-static float forwardmove_mobile, sidemove_mobile; //Joystick mode
+static float forwardmove_android, sidemove_android; //Joystick mode
 
 void PortableMoveFwd(float fwd)
 {
@@ -260,7 +259,7 @@ void PortableMoveFwd(float fwd)
 	else if (fwd < -1)
 		fwd = -1;
 
-	forwardmove_mobile = fwd;
+	forwardmove_android = fwd;
 }
 
 void PortableMoveSide(float strafe)
@@ -270,7 +269,7 @@ void PortableMoveSide(float strafe)
 	else if (strafe < -1)
 		strafe = -1;
 
-	sidemove_mobile = strafe;
+	sidemove_android = strafe;
 }
 
 void PortableMove(float fwd, float strafe)
@@ -393,8 +392,17 @@ void Mobile_IN_Move(ticcmd_t* cmd )
 
     if( !blockMove )
     {
-	    cmd->forwardmove  += forwardmove_mobile * forwardmove[1];
-	    cmd->sidemove  += sidemove_mobile   * sidemove[1];
+        float fwdSpeed =  forwardmove_android;
+        float sideSpeed = sidemove_android;
+
+        if(!isPlayerRunning())
+        {
+            fwdSpeed = fwdSpeed / 2;
+            sideSpeed = sideSpeed /2;
+        }
+
+	    cmd->forwardmove  += fwdSpeed * forwardmove[1];
+	    cmd->sidemove  += sideSpeed   * sidemove[1];
     }
 
     if( !blockLook )
