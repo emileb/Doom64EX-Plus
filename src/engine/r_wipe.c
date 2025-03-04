@@ -183,17 +183,19 @@ void WIPE_MeltScreen(void) {
 	dmemcpy(v2, v, sizeof(vtx_t) * 4);
 
 	dglBindTexture(GL_TEXTURE_2D, wipeMeltTexture);
-	GL_SetTextureMode(GL_ADD);
+	GL_SetTextureMode(GL_MODULATE);
 
 	for (i = 0; i < 160; i += 2) {
 		int j;
 
 		GL_ClearView(0xFF000000);
-
-		dglSetVertexColor(v2, D_RGBA(1, 0, 0, 0xff), 4);
+#ifdef __ANDROID__
+        dglBindTexture(GL_TEXTURE_2D, wipeMeltTexture);
+#endif
+		dglSetVertexColor(v2, D_RGBA(0xff, 0, 0, 0xff), 4);
 		GL_Draw2DQuad(v2, 1);
 
-		dglSetVertexColor(v, D_RGBA(0, 0, 0, 0x10), 4);
+		dglSetVertexColor(v, D_RGBA(0xff, 0, 0, 0xff), 4);
 		GL_Draw2DQuad(v, 1);
 
 		//
