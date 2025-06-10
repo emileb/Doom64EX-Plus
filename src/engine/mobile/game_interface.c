@@ -12,6 +12,7 @@
 
 #include "game_interface.h"
 
+
 // FIFO STUFF ////////////////////
 
 #define EVENTQUEUELENGTH 128
@@ -361,6 +362,14 @@ touchscreemode_t PortableGetScreenMode()
 		else
 			return TS_BLANK;
 	}
+}
+
+CVAR_EXTERNAL(p_autorun);
+
+bool PortableSetAlwaysRun(bool run)
+{
+    p_autorun.value = run;
+    return false;
 }
 
 void Mobile_AM_controls(double *zoom, fixed_t *pan_x, fixed_t *pan_y )
