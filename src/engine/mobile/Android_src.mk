@@ -16,7 +16,7 @@ LOCAL_C_INCLUDES :=     $(SDL_INCLUDE_PATHS)  \
                         $(TOP_DIR)/Clibs_OpenTouch/idtech1 \
                         $(LOCAL_PATH)/mobile  \
                         $(TOP_DIR)/gl4es/include \
-                        $(TOP_DIR)/AudioLibs_OpenTouch/fluidsynth/include\
+                        $(TOP_DIR)/AudioLibs_OpenTouch/fluidsynth/src/main/jni/fluidsynth-android/include \
 
 
 LOCAL_SRC_FILES =   ../../../../Clibs_OpenTouch/idtech1/android_jni.cpp \
@@ -117,9 +117,9 @@ LOCAL_SRC_FILES =   ../../../../Clibs_OpenTouch/idtech1/android_jni.cpp \
 
 LOCAL_LDLIBS += -llog -lz #-lGLESv1_CM
 
-LOCAL_STATIC_LIBRARIES += fluidsynth-static SDL2_net logwritter
+LOCAL_STATIC_LIBRARIES += SDL2_net logwritter
 
-LOCAL_SHARED_LIBRARIES := touchcontrols SDL2 SDL2_mixer SDL2_image core_shared saffal GL4ES
+LOCAL_SHARED_LIBRARIES := touchcontrols fluidsynth SDL2 SDL2_mixer SDL2_image core_shared saffal GL4ES
 
 #Strip unused functions/data
 LOCAL_CFLAGS += -funsafe-math-optimizations -fvisibility=hidden -fdata-sections -ffunction-sections -fPIC
