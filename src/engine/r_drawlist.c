@@ -215,10 +215,10 @@ void DL_ProcessDrawList(int tag, boolean(*procfunc)(vtxlist_t*, int*)) {
             }
             else {
                 unsigned int flags = ((visspritelist_t*)head->data)->spr->flags;
-                unsigned int __packed = (unsigned int)head->texid;
+                unsigned int __packed1 = (unsigned int)head->texid;
 
-                palette = (int)((__packed >> 24) & 0xFF);
-                head->texid = (int)(__packed & 0xFFFF);
+                palette = (int)((__packed1 >> 24) & 0xFF);
+                head->texid = (int)(__packed1 & 0xFFFF);
 
                 GL_BindSpriteTexture(head->texid, palette);
 

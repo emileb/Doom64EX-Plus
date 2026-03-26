@@ -406,6 +406,12 @@ void I_Quit(void) {
 // I_Printf
 //
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO,"JNITouchControlsUtils", __VA_ARGS__))
+#include "LogWritter.h"
+#endif
+
 void I_Printf(const char* string, ...) {
 	char buff[1024];
 	va_list    va;
@@ -413,6 +419,10 @@ void I_Printf(const char* string, ...) {
 	va_start(va, string);
 	SDL_vsnprintf(buff, sizeof(buff), string, va);
 	va_end(va);
+#ifdef __ANDROID__
+	LOGI("D64: %s", buff);
+	LogWritter_Write(buff);
+#endif
 	printf("%s", buff);
 	fflush(stdout);
 	if (console_initialized) {

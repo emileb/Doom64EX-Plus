@@ -442,8 +442,11 @@ float D_fabs(float x) {
 //
 // main
 //
-
+#ifdef __ANDROID__
+int main_android(int argc, char *argv[]) {
+#else
 int main(int argc, char *argv[]) {
+#endif
 	myargc = argc;
 	myargv = argv;
 
