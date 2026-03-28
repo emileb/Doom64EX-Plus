@@ -25,6 +25,7 @@
 #include <math.h>
 
 #include "i_sectorcombiner.h"
+#include "gl_main.h"
 
 #ifndef COUNTOF
 #define COUNTOF(a) ((int)(sizeof(a)/sizeof((a)[0])))
@@ -45,7 +46,7 @@ static int g_procs_loaded = 0;
 
 static void load_glsl_procs(void) {
     if (g_procs_loaded) return;
-#define GL_GET(fn) *(void**)(&p##fn) = SDL_GL_GetProcAddress(#fn)
+#define GL_GET(fn) *(void**)(&p##fn) = GL_RegisterProc(#fn)
     GL_GET(glGetUniformLocation);
     GL_GET(glUniform1i);
     GL_GET(glUniform1f);

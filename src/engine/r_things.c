@@ -729,7 +729,9 @@ void R_DrawPSprite(pspdef_t* psp, sector_t* sector, player_t* player) {
 		int l = (sector->lightlevel >> 1);
 
 		GL_SetTextureUnit(1, true);
+#ifndef __ANDROID__ // Make the weapon too bright
 		GL_SetTextureMode(GL_ADD);
+#endif
 		GL_UpdateEnvTexture(D_RGBA(l, l, l, 0xff));
 		GL_SetTextureUnit(0, true);
 

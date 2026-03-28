@@ -767,7 +767,9 @@ void I_FinishUpdate(void) {
 	GL_ResetTextures();
 	GL_SetState(GLSTATE_BLEND, 1);
 #endif
+#ifndef __ANDROID__
 	dglFinish();
+#endif
 	BusyDisk = false;
 }
 
