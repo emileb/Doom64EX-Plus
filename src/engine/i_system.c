@@ -201,9 +201,19 @@ ticcmd_t* I_BaseTiccmd(void) {
 }
 
  
+#ifdef __ANDROID__
+extern const char *userFilesPath_c;
+#endif
+
 // return fully qualified non-NULL path that ends with a separator. Must not be freed by caller.
-char* I_GetUserDir(void) 
+char* I_GetUserDir(void)
 {
+#ifdef __ANDROID__
+	char * path = malloc(PATH_MAX);
+	snprintf(path, PATH_MAX, "%s/D64/", userFilesPath_c);
+	mkdir(path, 0777);
+	return path;
+#endif
 	static char* g_user_dir = NULL;
 
 	if (!g_user_dir) {
@@ -227,9 +237,29 @@ char* I_GetUserFile(char* filename) {
 	return M_StringDuplicate(path);
 }
 
+#ifdef __ANDROID__
+extern char datafolder[];
+#endif
+
 // return a fully qualified path or NULL if not found. Must be freed by caller
 static char* FindDataFile(char* file) {
 	char* path;
+
+	I_Printf("df = %s\n", datafolder);
+#ifdef __ANDROID__
+	{
+		static filepath_t android_path;
+		char* dir;
+		dir = "./";
+		snprintf(android_path, sizeof(android_path), "%s%s", dir, file);
+		if (M_FileExists(android_path))
+			return M_StringDuplicate(android_path);
+		dir = datafolder;
+		snprintf(android_path, sizeof(android_path), "%s%s", dir, file);
+		if (M_FileExists(android_path))
+			return M_StringDuplicate(android_path);
+	}
+#endif
 	steamgame_t game;
 #ifdef SDL_PLATFORM_WIN32
 	filepath_t gog_install_dir;

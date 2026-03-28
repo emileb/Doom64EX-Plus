@@ -48,26 +48,7 @@ fixed_t
 FixedMul
 (fixed_t    a,
 	fixed_t    b) {
-
-#if defined __arm__ && !defined SDL_PLATFORM_MACOS && !defined __GNUC__
-	asm(
-		"SMULL 	 R2, R3, R0, R1\n\t"
-		"MOV	 R1, R2, LSR #16\n\t"
-		"MOV	 R2, R3, LSL #16\n\t"
-		"ORR	 R0, R1, R2\n\t"
-		"BX		 LR"
-	);
-#elif defined __aarch64__ && !defined SDL_PLATFORM_MACOS && !defined __GNUC__
-	asm(
-		"SMLAL 	 R2, R3, R0, R1\n\t"
-		"MOV	 R1, R2, LSR #16\n\t"
-		"MOV	 R2, R3, LSL #16\n\t"
-		"ORR	 R0, R1, R2\n\t"
-		"BX		 LR"
-	);
-#else
 	return (fixed_t)(((int64_t)a * (int64_t)b) >> FRACBITS);
-#endif
 }
 
 //

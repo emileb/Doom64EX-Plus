@@ -181,6 +181,10 @@ cleanup:
 //
 // I_InitScreen
 //
+#ifdef __ANDROID__
+extern int game_screen_width;
+extern int game_screen_height;
+#endif
 
 void I_InitScreen(void) {
     unsigned int  flags = 0;
@@ -200,6 +204,12 @@ void I_InitScreen(void) {
         initial_h = (int)(native_h * 0.8f);
     }
 
+#ifdef __ANDROID__
+    v_fullscreen.value = true;
+    initial_w = game_screen_width;
+    initial_h = game_screen_height;
+#endif
+
     video_width = initial_w;
     video_height = initial_h;
     video_ratio = (float)video_width / (float)video_height;
@@ -212,7 +222,7 @@ void I_InitScreen(void) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 #else
-    
+
     if (!video_driver || !dstreq(video_driver, "wayland")) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -220,10 +230,20 @@ void I_InitScreen(void) {
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 #endif
+#ifdef __ANDROID__ss
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+#else
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+#endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#ifdef __ANDROID__
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#endif
 
     flags = SDL_WINDOW_OPENGL;
+
 
 #ifndef __APPLE__
     flags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
@@ -235,6 +255,10 @@ void I_InitScreen(void) {
     else {
         flags |= SDL_WINDOW_RESIZABLE;
     }
+
+#ifdef __ANDROID__
+    flags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
+#endif
 
 #ifdef SDL_PLATFORM_WIN32
     setUseDXGISwapChainNVIDIA(flags & SDL_WINDOW_RESIZABLE);
@@ -296,7 +320,16 @@ void I_InitScreen(void) {
     }
     SDL_GL_MakeCurrent(window, glContext);
 
+
     SDL_GetWindowSizeInPixels(window, &win_px_w, &win_px_h);
+
+#ifdef __ANDROID__
+    void initialize_gl4es( void );
+    initialize_gl4es();
+    win_px_w = video_width;
+    win_px_h = video_height;
+#endif
+
     GL_OnResize(win_px_w, win_px_h);
 
     SDL_DisplayID displayid = SDL_GetDisplayForWindow(window);

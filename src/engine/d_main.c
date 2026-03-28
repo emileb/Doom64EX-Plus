@@ -82,6 +82,7 @@ char            basedefault[1024];          // default file
 boolean        rundemo4 = false;    // run demo lump #4?
 int             gameflags = 0;
 int             compatflags = 0;
+char            datafolder[PATH_MAX];
 
 void D_CheckNetGame(void);
 void D_ProcessEvents(void);
@@ -830,6 +831,16 @@ static void D_Init(void) {
 	if (M_CheckParm("-nogun")) {
 		ShowGun = false;
 	}
+	
+#ifdef __ANDROID__
+	p = M_CheckParm("-datafolder");
+	if (p && p < myargc - 1) {
+		strcpy(datafolder, myargv[p + 1]);
+	}
+	else {
+		datafolder[0] = 0;
+	}
+#endif
 }
 
 //

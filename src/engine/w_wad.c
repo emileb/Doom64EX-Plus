@@ -467,7 +467,12 @@ void W_Init(void) {
 
 	Z_Free(fileinfo);
 
+#ifdef __ANDROID__
+
+	if ((doom64expluswad = I_FindDataFile("../res/doom64ex-plus.wad"))) {
+#else
 	if ((doom64expluswad = I_FindDataFile("doom64ex-plus.wad"))) {
+#endif
 		W_MergeFile(doom64expluswad);
 	}
 	else {

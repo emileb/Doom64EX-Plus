@@ -6,11 +6,12 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := doom64ExPlus_5
 
-LOCAL_CFLAGS := -DENGINE_NAME=\"doom64\" -Dstricmp=strcasecmp -fsigned-char -DDOOM64EX
+LOCAL_CFLAGS := -DENGINE_NAME=\"doom64\" -Dstricmp=strcasecmp -fsigned-char -DDOOM64EX -DUSE_SDL3
 
 
 LOCAL_C_INCLUDES :=     $(SDL3_INCLUDE_PATHS)  \
                         $(TOP_DIR) \
+                        $(TOP_DIR)/MobileTouchControls/libpng \
                         $(TOP_DIR)/MobileTouchControls \
                         $(TOP_DIR)/Clibs_OpenTouch \
                         $(TOP_DIR)/Clibs_OpenTouch/idtech1 \
@@ -111,9 +112,9 @@ LOCAL_SRC_FILES =   ../../../../Clibs_OpenTouch/idtech1/android_jni.cpp \
 
 LOCAL_LDLIBS += -llog -lz #-lGLESv1_CM
 
-LOCAL_STATIC_LIBRARIES += SDL2_net logwritter
+LOCAL_STATIC_LIBRARIES += logwritter
 
-LOCAL_SHARED_LIBRARIES := touchcontrols fluidsynth SDL3 SDL2_mixer SDL2_image core_shared saffal GL4ES fmod
+LOCAL_SHARED_LIBRARIES := touchcontrols fluidsynth SDL3 core_shared saffal GL4ES fmod
 
 #Strip unused functions/data
 LOCAL_CFLAGS += -funsafe-math-optimizations -fvisibility=hidden -fdata-sections -ffunction-sections -fPIC

@@ -118,8 +118,19 @@ boolean GL_CheckExtension(const char *ext) {
 // GL_RegisterProc
 //
 
+#include <dlfcn.h>
+
 void* GL_RegisterProc(const char *address) {
+#ifdef __ANDROID__
+    static void* h = NULL;
+    if (h == NULL)
+    {
+        h = dlopen("libGL4ES.so", RTLD_LAZY | RTLD_LOCAL);
+    }
+    void * proc = dlsym(h, address);
+#else
     void *proc = SDL_GL_GetProcAddress(address);
+#endif
 
     if(!proc) {
         CON_Warnf("GL_RegisterProc: Failed to get proc address: %s", address);
@@ -563,6 +574,10 @@ void GL_Init(void) {
     }
 
     gl_has_combiner = (has_GL_ARB_texture_env_combine | has_GL_EXT_texture_env_combine);
+
+#ifdef __ANDROID__
+    gl_has_combiner = 0;
+#endif
 
     if(!gl_has_combiner) {
         CON_Warnf("Texture combiners not supported...\n");

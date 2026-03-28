@@ -668,6 +668,10 @@ CVAR_EXTERNAL(p_autorun);
 // If recording a demo, write it out
 //
 
+#ifdef __ANDROID__
+void Mobile_IN_Move(ticcmd_t* cmd );
+#endif
+
 void G_BuildTiccmd(ticcmd_t* cmd) {
 	int                 i;
 	int                 speed;
@@ -888,6 +892,10 @@ void G_BuildTiccmd(ticcmd_t* cmd) {
 
 	cmd->forwardmove += forward;
 	cmd->sidemove += side;
+
+#ifdef __ANDROID__
+	Mobile_IN_Move( cmd );
+#endif
 
 	// special buttons
 	if (sendpause) {

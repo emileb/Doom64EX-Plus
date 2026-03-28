@@ -111,6 +111,9 @@ void WIPE_FadeScreen(int fadetics) {
 		//
 		color = D_RGBA(wipeFadeAlpha, wipeFadeAlpha, wipeFadeAlpha, 0xff);
 
+#ifdef __ANDROID__
+		dglBindTexture(GL_TEXTURE_2D, wipeMeltTexture);
+#endif
 		dglSetVertexColor(v, color, 4);
 		GL_Draw2DQuad(v, 1);
 
@@ -176,17 +179,30 @@ void WIPE_MeltScreen(void) {
 	dmemcpy(v2, v, sizeof(vtx_t) * 4);
 
 	dglBindTexture(GL_TEXTURE_2D, wipeMeltTexture);
+#ifdef __ANDROID__
+	GL_SetTextureMode(GL_MODULATE);
+#else
 	GL_SetTextureMode(GL_ADD);
+#endif
 
 	for (i = 0; i < 160; i += 2) {
 		int j;
 
 		GL_ClearView(0xFF000000);
 
+#ifdef __ANDROID__
+		dglBindTexture(GL_TEXTURE_2D, wipeMeltTexture);
+
+		dglSetVertexColor(v2, D_RGBA(0xff, 0, 0, 0xff), 4);
+		GL_Draw2DQuad(v2, 1);
+
+		dglSetVertexColor(v, D_RGBA(0xff, 0, 0, 0xff), 4);
+#else
 		dglSetVertexColor(v2, D_RGBA(1, 0, 0, 0xff), 4);
 		GL_Draw2DQuad(v2, 1);
 
 		dglSetVertexColor(v, D_RGBA(0, 0, 0, 0x10), 4);
+#endif
 		GL_Draw2DQuad(v, 1);
 
 		//

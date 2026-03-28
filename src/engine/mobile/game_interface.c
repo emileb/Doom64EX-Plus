@@ -7,11 +7,14 @@
 #include "g_controls.h"
 #include <pthread.h>
 
-#include "SDL.h"
-#include "SDL_keycode.h"
+#include "SDL3/SDL.h"
+#include "SDL3/SDL_keycode.h"
+#include "SDL3/SDL_keyboard.h"
 
 #include "game_interface.h"
 
+#define SDL_DEFAULT_KEYBOARD_ID    1
+extern bool SDL_SendKeyboardKey(Uint64 timestamp, SDL_KeyboardID keyboardID, int rawcode, SDL_Scancode scancode, bool down);
 
 // FIFO STUFF ////////////////////
 
@@ -59,8 +62,6 @@ static void in_finishevent_cmd(void)
 }
 
 ///////////////////////
-
-extern int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
 int PortableKeyEvent(int state, int code,int unicode)
 {
@@ -239,10 +240,14 @@ void PortableAction(int state, int action)
 				PortableCommand("quickload");
             break;
         case PORT_ACT_CONSOLE:
+#if 0
 			if (state)
-				SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_GRAVE);
+                SDL_SendKeyboardKey(0, SDL_DEFAULT_KEYBOARD_ID, '/', SDL_SCANCODE_GRAVE, true);
+				//SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_GRAVE);
 			else
-				SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_GRAVE);
+                SDL_SendKeyboardKey(0, SDL_DEFAULT_KEYBOARD_ID, '/', SDL_SCANCODE_GRAVE, false);
+				//SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_GRAVE);
+#endif
             break;
 		}
 

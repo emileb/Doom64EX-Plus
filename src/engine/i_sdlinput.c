@@ -763,6 +763,10 @@ static float GetDisplayRefreshRate(void) {
 void I_FinishUpdate(void) {
 	I_UpdateGrab();
 	SDL_GL_SwapWindow(window);
+#ifdef __ANDROID__
+	GL_ResetTextures();
+	GL_SetState(GLSTATE_BLEND, 1);
+#endif
 	dglFinish();
 	BusyDisk = false;
 }

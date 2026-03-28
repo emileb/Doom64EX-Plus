@@ -609,6 +609,11 @@ int GL_BindGfxTexture(const char* name, int alpha) {
 	format = alpha ? GL_RGBA8 : GL_RGB8;
 	type = alpha ? GL_RGBA : GL_RGB;
 
+#ifdef __ANDROID__
+    format = GL_RGBA;
+    type =  GL_RGBA;
+#endif
+
 	SetTextureImage(png, (alpha ? 4 : 3), &width, &height, format, type);
 	Z_Free(png);
 
@@ -832,11 +837,11 @@ dtexture GL_ScreenToTexture(void) {
 	dglTexImage2D(
 		GL_TEXTURE_2D,
 		0,
-		GL_RGB8,
+		GL_RGBA,
 		width,
 		height,
 		0,
-		GL_RGB,
+		GL_RGBA,
 		GL_UNSIGNED_BYTE,
 		0
 	);
