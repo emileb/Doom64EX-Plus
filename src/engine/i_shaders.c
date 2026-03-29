@@ -88,7 +88,11 @@ static GLuint is_current_prog = 0;
 static void I_ShaderLoad(void) {
 	if (is_glsl_loaded)
 		return;
+#ifdef __ANDROID__
 #define GL_GET(fn) *(void**)(&p##fn) = GL_RegisterProc(#fn)
+#else
+#define GL_GET(fn) *(void**)(&p##fn) = SDL_GL_GetProcAddress(#fn)
+#endif
 	GL_GET(glCreateShader);  GL_GET(glShaderSource);
 	GL_GET(glCompileShader); GL_GET(glGetShaderiv);
 	GL_GET(glGetShaderInfoLog);
@@ -109,11 +113,34 @@ static void I_ShaderLoad(void) {
 ============================
 */
 
+#ifdef __ANDROID__
+#define GLSL_PRECISION "#ifdef GL_ES\nprecision mediump float;\nprecision mediump int;\n#endif\n"
+#define GLSL_VS_EXTRA  ""
+#else
+#define GLSL_PRECISION ""
+#define GLSL_VS_EXTRA \
+"uniform int   uPassCount;\n" \
+"uniform int   uPassMode[4];\n" \
+"uniform vec4  uPassColor[4];\n" \
+"uniform float uPassFactor[4];\n" \
+"uniform int   uFogEnabled;\n" \
+"uniform vec3  uFogColor;\n" \
+"uniform float uFogFactor;\n" \
+"vec3 _applyPass(int mode, vec3 base, vec3 src, float f){\n" \
+"  if (mode==8448) return base*src;\n" \
+"  if (mode==260)  return base+src;\n" \
+"  if (mode==34165) return mix(base,src, clamp(f,0.0,1.0));\n" \
+"  if (mode==7681) return src;\n" \
+"  return base;\n" \
+"}\n"
+#endif
+
 static const char* vertex_shader_bilateral =
 "#version 120\n"
-"#ifdef GL_ES\nprecision mediump float;\nprecision mediump int;\n#endif\n"
+GLSL_PRECISION
 "varying vec2 vUV;\n"
 "varying vec4 vColor;\nvarying float vEyeDist;\n"
+GLSL_VS_EXTRA
 "void main(){\n"
 "  vec4 eye = gl_ModelViewMatrix * gl_Vertex;\n  vEyeDist = length(eye.xyz);\n  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
 "  vUV = gl_MultiTexCoord0.xy;\n"
@@ -123,7 +150,7 @@ static const char* vertex_shader_bilateral =
 /* N64 3-point filter (atsb) */
 static const char* fragment_shader_bilateral_3point =
 "#version 120\n"
-"#ifdef GL_ES\nprecision mediump float;\nprecision mediump int;\n#endif\n"
+GLSL_PRECISION
 "#define ADD_SCALE 0.60\n"
 "uniform sampler2D uTex;\n"
 "uniform vec2  uTexel;\n"
@@ -232,7 +259,7 @@ static const char* fragment_shader_bilateral_3point =
 /* atsb: bilinear */
 static const char* fragment_shader_bilateral =
 "#version 120\n"
-"#ifdef GL_ES\nprecision mediump float;\nprecision mediump int;\n#endif\n"
+GLSL_PRECISION
 "#define ADD_SCALE 0.60\n"
 "uniform sampler2D uTex;\n"
 "varying vec2 vUV;\n"

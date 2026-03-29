@@ -25,7 +25,9 @@
 #include <math.h>
 
 #include "i_sectorcombiner.h"
+#ifdef __ANDROID__
 #include "gl_main.h"
+#endif
 
 #ifndef COUNTOF
 #define COUNTOF(a) ((int)(sizeof(a)/sizeof((a)[0])))
@@ -46,7 +48,11 @@ static int g_procs_loaded = 0;
 
 static void load_glsl_procs(void) {
     if (g_procs_loaded) return;
+#ifdef __ANDROID__
 #define GL_GET(fn) *(void**)(&p##fn) = GL_RegisterProc(#fn)
+#else
+#define GL_GET(fn) *(void**)(&p##fn) = SDL_GL_GetProcAddress(#fn)
+#endif
     GL_GET(glGetUniformLocation);
     GL_GET(glUniform1i);
     GL_GET(glUniform1f);
