@@ -904,6 +904,18 @@ void D_DoomMain(void) {
 
 	devparm = M_CheckParm("-devparm");
 
+#ifdef __ANDROID__
+	{
+		int p = M_CheckParm("-datafolder");
+		if (p && p < myargc - 1) {
+			strcpy(datafolder, myargv[p + 1]);
+		}
+		else {
+			datafolder[0] = 0;
+		}
+	}
+#endif
+
 	// init subsystems
 
 	I_Printf("Z_Init: Init Zone Memory Allocator\n");
