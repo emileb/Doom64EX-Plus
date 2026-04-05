@@ -27,6 +27,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #include <fmod.h>
 #include <fmod_errors.h>
@@ -1228,6 +1231,42 @@ static int SDLCALL Thread_PlayerHandler(void* param) {
     return 0;
 }
 
+
+#ifdef __ANDROID__
+//
+// FMOD POSIX file callbacks
+// Route all FMOD file I/O through intercepted POSIX calls so our preloaded
+// library (which wraps open/close/read/lseek) is used instead of FMOD's
+// internal libc calls (FMOD is not linked against the intercept library).
+//
+
+static FMOD_RESULT F_CALLBACK fmod_posix_open(const char *name, unsigned int *filesize, void **handle, void *userdata) {
+    int fd = open(name, O_RDONLY);
+    if (fd < 0) return FMOD_ERR_FILE_NOTFOUND;
+    struct stat st;
+    if (fstat(fd, &st) < 0) { close(fd); return FMOD_ERR_FILE_NOTFOUND; }
+    *filesize = (unsigned int)st.st_size;
+    *handle = (void *)(intptr_t)fd;
+    return FMOD_OK;
+}
+
+static FMOD_RESULT F_CALLBACK fmod_posix_close(void *handle, void *userdata) {
+    close((int)(intptr_t)handle);
+    return FMOD_OK;
+}
+
+static FMOD_RESULT F_CALLBACK fmod_posix_read(void *handle, void *buffer, unsigned int sizebytes, unsigned int *bytesread, void *userdata) {
+    ssize_t n = read((int)(intptr_t)handle, buffer, sizebytes);
+    if (n < 0) return FMOD_ERR_FILE_BAD;
+    *bytesread = (unsigned int)n;
+    return (*bytesread < sizebytes) ? FMOD_ERR_FILE_EOF : FMOD_OK;
+}
+
+static FMOD_RESULT F_CALLBACK fmod_posix_seek(void *handle, unsigned int pos, void *userdata) {
+    return (lseek((int)(intptr_t)handle, (off_t)pos, SEEK_SET) < 0) ? FMOD_ERR_FILE_COULDNOTSEEK : FMOD_OK;
+}
+
+#endif
 //
 // I_InitSequencer
 //
@@ -1241,6 +1280,13 @@ void I_InitSequencer(void) {
 
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system, 92, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system_music, 128, FMOD_INIT_NORMAL, NULL));
+#ifdef __ANDROID__
+    // Route all FMOD file I/O (including dlsname soundfont loading) through
+    // POSIX calls so our intercepting library is used. The -1 blockalign lets
+    // FMOD choose its own internal read-block size.
+    FMOD_ERROR_CHECK(FMOD_System_SetFileSystem(sound.fmod_studio_system,       fmod_posix_open, fmod_posix_close, fmod_posix_read, fmod_posix_seek, NULL, NULL, -1));
+    FMOD_ERROR_CHECK(FMOD_System_SetFileSystem(sound.fmod_studio_system_music, fmod_posix_open, fmod_posix_close, fmod_posix_read, fmod_posix_seek, NULL, NULL, -1));
+#endif
 
     FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master));
     FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system_music, &sound.master_music));
