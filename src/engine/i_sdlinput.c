@@ -674,10 +674,22 @@ void I_GetEvent(SDL_Event* Event) {
 
 	case SDL_EVENT_WINDOW_FOCUS_GAINED:
 		window_focused = true;
+#ifdef __ANDROID__
+            {
+                FMOD_ResumeMusic();
+                FMOD_ResumeSFXLoop();
+            }
+#endif
 		break;
 
 	case SDL_EVENT_WINDOW_FOCUS_LOST:
 		window_focused = false;
+#ifdef __ANDROID__
+            {
+                FMOD_PauseMusic();
+                FMOD_PauseSFXLoop();
+            }
+#endif
 		break;
 
 	case SDL_EVENT_WINDOW_MOUSE_ENTER:
