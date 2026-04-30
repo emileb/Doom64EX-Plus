@@ -1970,13 +1970,13 @@ void FMOD_ResumeMusic(void) {
 }
 
 void FMOD_PauseSFXLoop(void) {
-    if(sound.fmod_studio_channel_loop) {
-        FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, true));
+    if(sound.master) {
+        FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetPaused(sound.master, true));
     }
 }
 
 void FMOD_ResumeSFXLoop(void) {
-    if(sound.fmod_studio_channel_loop) {
-        FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false));
+    if(sound.master) {
+        FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetPaused(sound.master, false));
     }
 }
