@@ -1278,6 +1278,11 @@ void I_InitSequencer(void) {
     FMOD_ERROR_CHECK(FMOD_System_Create(&sound.fmod_studio_system, FMOD_VERSION));
     FMOD_ERROR_CHECK(FMOD_System_Create(&sound.fmod_studio_system_music, FMOD_VERSION));
 
+#ifdef __ANDROID__NONO
+    FMOD_ERROR_CHECK(FMOD_System_SetOutput(sound.fmod_studio_system,       FMOD_OUTPUTTYPE_OPENSL));
+    FMOD_ERROR_CHECK(FMOD_System_SetOutput(sound.fmod_studio_system_music, FMOD_OUTPUTTYPE_OPENSL));
+#endif
+
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system, 92, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system_music, 128, FMOD_INIT_NORMAL, NULL));
 #ifdef __ANDROID__

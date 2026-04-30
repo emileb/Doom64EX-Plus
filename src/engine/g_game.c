@@ -203,7 +203,11 @@ static CMD(Button) {
 
 	if (data & PCKF_UP) {
 		if ((pc->key[key] & PCKF_COUNTMASK) > 0) {
+#ifdef __ANDROID__
+            pc->key[key] = 0; // Don't allow multiple key, keys can get get stuck on
+#else
 			pc->key[key]--;
+#endif
 		}
 
 		if (ButtonAction) {
