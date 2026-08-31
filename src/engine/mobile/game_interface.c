@@ -5,6 +5,7 @@
 #include "d_ticcmd.h"
 #include "m_fixed.h"
 #include "g_controls.h"
+#include "g_actions.h"
 #include <pthread.h>
 
 #include "SDL3/SDL.h"

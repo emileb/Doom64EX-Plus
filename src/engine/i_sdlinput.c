@@ -31,6 +31,8 @@
 #include "con_cvar.h"
 #include "dgl.h"
 #include "g_settings.h"
+#include "i_audio.h"
+#include "gl_texture.h"
 
 CVAR(v_msensitivityx, 5);
 CVAR(v_msensitivityy, 5);
