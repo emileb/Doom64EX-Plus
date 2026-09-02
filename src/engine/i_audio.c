@@ -434,7 +434,7 @@ static void Song_ClearPlaylist(void) {
     int i;
 
     for (i = 0; i < MIDI_CHANNELS; i++) {
-        dmemset(&playlist[i], 0, sizeof(song_t));
+        dmemset(&playlist[i], 0, sizeof(channel_t));
 
         playlist[i].id = i;
         playlist[i].state = CHAN_STATE_READY;
@@ -1090,7 +1090,7 @@ static int Seq_RegisterSounds(void) {
                 result = FMOD_System_CreateSound(
                     sound.fmod_studio_system,
                     (const char*)p,
-                    FMOD_OPENMEMORY_POINT | mode,
+                    FMOD_OPENMEMORY | mode,
                     &exinfo,
                     &snd
                 );
