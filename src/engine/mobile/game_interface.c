@@ -241,13 +241,11 @@ void PortableAction(int state, int action)
 				PortableCommand("quickload");
             break;
         case PORT_ACT_CONSOLE:
-#if 0
+#if 1
 			if (state)
                 SDL_SendKeyboardKey(0, SDL_DEFAULT_KEYBOARD_ID, '/', SDL_SCANCODE_GRAVE, true);
-				//SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_GRAVE);
 			else
                 SDL_SendKeyboardKey(0, SDL_DEFAULT_KEYBOARD_ID, '/', SDL_SCANCODE_GRAVE, false);
-				//SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_GRAVE);
 #endif
             break;
 		}
@@ -378,18 +376,14 @@ bool PortableSetAlwaysRun(bool run)
     return false;
 }
 
-void Mobile_AM_controls(double *zoom, fixed_t *pan_x, fixed_t *pan_y )
+// Hand the accumulated gestures to AM_Ticker as raw screen fractions; the
+// automap scales them itself since only it knows the current zoom level.
+void Mobile_AM_controls(float *zoom, float *pan_x, float *pan_y)
 {
-	if (am_zoom)
-	{
-        *zoom = am_zoom * 10;
-		am_zoom = 0;
-	}
-
-	*pan_x += (fixed_t)(am_pan_x * 20000000);
-	*pan_y += -(fixed_t)(am_pan_y * 10000000);
-	am_pan_x = am_pan_y = 0;
-	//LOGI("zoom = %f",*zoom);
+	*zoom = am_zoom;
+	*pan_x = am_pan_x;
+	*pan_y = am_pan_y;
+	am_zoom = am_pan_x = am_pan_y = 0;
 }
 
 //in g_game.c for max speeds

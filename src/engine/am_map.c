@@ -84,6 +84,10 @@ static const float max_scale = 2000.0f;
 
 void AM_Start(void);
 
+#ifdef __ANDROID__
+void Mobile_AM_controls(float *zoom, float *pan_x, float *pan_y);
+#endif
+
 // automap cvars
 
 CVAR(am_lines, 1);
@@ -221,6 +225,15 @@ void AM_Start(void) {
 
 	stopped = false;
 	automapactive = true;
+#ifdef __ANDROID__
+	{
+		// No way to recenter by touch, so start centred and drop any stale gesture
+		float zoom, panx, pany;
+
+		Mobile_AM_controls(&zoom, &panx, &pany);
+		automappanx = automappany = 0;
+	}
+#endif
 	amModeCycle = 0;
 	am_flags = 0;
 	am_blink = 0x5F | 0x100;
@@ -423,6 +436,60 @@ boolean AM_Responder(event_t* ev) {
 	return rc;
 }
 
+#ifdef __ANDROID__
+//
+// AM_TouchControls
+// Apply one frame of touch drag/pinch. Both come in as fractions of the
+// screen, so a drag moves the map exactly as far as the finger travelled.
+//
+
+static void AM_TouchControls(void) {
+	float zoom, panx, pany;
+	float fov, span, dx, dy;
+
+	Mobile_AM_controls(&zoom, &panx, &pany);
+
+	if (zoom != 0.0f) {
+		// Multiplicative so a pinch feels the same at any zoom level
+		float f = 1.0f + zoom * 4.0f;
+
+		if (f < 0.25f) f = 0.25f;
+		else if (f > 4.0f) f = 4.0f;
+
+		scale /= f;
+
+		if (scale < min_scale) scale = min_scale;
+		else if (scale > max_scale) scale = max_scale;
+	}
+
+	if (panx == 0.0f && pany == 0.0f) {
+		return;
+	}
+
+	// World units covered by the screen height, matching AM_BeginDraw's frustum
+	fov = 45.0f * (scale / 200.0f);
+	if (fov > 170.0f) {
+		fov = 170.0f;
+	}
+
+	span = 4.0f * scale * (float)tan((double)fov * M_PI / 360.0);
+
+	// Pan is applied after the view rotation, so it is already screen aligned
+	dx = panx * span * ((float)video_width / (float)video_height);
+	dy = -pany * span;
+
+	// fixed_t only reaches about +/-32768 map units, so never overflow it in one step
+	if (dx < -16000.0f) dx = -16000.0f;
+	else if (dx > 16000.0f) dx = 16000.0f;
+
+	if (dy < -16000.0f) dy = -16000.0f;
+	else if (dy > 16000.0f) dy = 16000.0f;
+
+	automappanx += (fixed_t)(dx * FRACUNIT);
+	automappany += (fixed_t)(dy * FRACUNIT);
+}
+#endif
+
 //
 // AM_Ticker
 // Updates on Game Tick
@@ -480,6 +547,10 @@ void AM_Ticker(void) {
 			updated_follow_target = true;
 		}
 	}
+
+#ifdef __ANDROID__
+	AM_TouchControls();
+#endif
 
 	if (am_flags & AF_PANGAMEPAD) {
 		automappanx += mpanx;
