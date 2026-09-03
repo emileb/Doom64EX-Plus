@@ -758,6 +758,7 @@ void R_DrawPSprite(pspdef_t* psp, sector_t* sector, player_t* player) {
 
 	GL_SetDefaultCombiner();
 	GL_SetState(GLSTATE_BLEND, 0);
+	dglDepthMask(GL_TRUE);  // GL_BindSpriteTexture leaves depth writes off
 	I_ShaderBind();
 
 	if (prev_scope) {

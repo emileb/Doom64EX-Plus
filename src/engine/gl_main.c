@@ -472,6 +472,8 @@ void GL_ClearView(rcolor clearcolor) {
 
     dglGetColorf(clearcolor, f);
     dglClearColor(f[0], f[1], f[2], f[3]);
+    // glClear ignores the depth buffer while depth writes are masked off
+    dglDepthMask(GL_TRUE);
     dglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     dglViewport(ViewWindowX, ViewWindowY, ViewWidth, ViewHeight);
     dglScissor(ViewWindowX, ViewWindowY, ViewWidth, ViewHeight);
