@@ -32,6 +32,7 @@
 #include "dgl.h"
 #include "con_cvar.h"
 #include "m_fixed.h"
+#include "i_sectorcombiner.h"
 
 CVAR_EXTERNAL(r_texturecombiner);
 CVAR_EXTERNAL(i_interpolateframes);
@@ -334,6 +335,7 @@ void R_RenderWorld(void) {
 	dglDisable(GL_FOG);
 	dglDisable(GL_DEPTH_TEST);
 	GL_SetOrthoScale(1.0f);
+	I_SectorCombiner_SetLightAdd(0.0f);  // don't leak the last sector's glow into the psprite/hud
 	GL_SetDefaultCombiner();
 	I_ShaderUnBind();
 }

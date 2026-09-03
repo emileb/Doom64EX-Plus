@@ -30,6 +30,7 @@
 #include "i_system.h"
 #include "z_zone.h"
 #include "dgl.h"
+#include "i_sectorcombiner.h"
 
 vtx_t drawVertex[MAXDLDRAWCOUNT];
 
@@ -248,6 +249,7 @@ void DL_ProcessDrawList(int tag, boolean(*procfunc)(vtxlist_t*, int*)) {
             else {
                 int l = (head->params >> 1);
                 GL_UpdateEnvTexture(D_RGBA(l, l, l, 0xff));
+                I_SectorCombiner_SetLightAdd((float)head->params / 255.0f);
             }
 
             dglDrawGeometry(drawcount, drawVertex);
@@ -333,6 +335,7 @@ void DL_ProcessDrawList(int tag, boolean(*procfunc)(vtxlist_t*, int*)) {
                     else {
                         int l = (head->params >> 1);
                         GL_UpdateEnvTexture(D_RGBA(l, l, l, 0xff));
+                        I_SectorCombiner_SetLightAdd((float)head->params / 255.0f);
                     }
 
                     dglDrawGeometry(drawcount, drawVertex);

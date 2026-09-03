@@ -282,3 +282,16 @@ void I_SectorCombiner_Commit(void) {
     I_SectorCombinerTexturePasses();
     I_SectorCombinerUniforms();
 }
+
+// mirrors dglTexCombColorf(t, f, GL_ADD) but touches only the shader, not GL texenv state
+void I_SectorCombiner_SetLightAdd(float l) {
+    s.env_color[0] = s.env_color[1] = s.env_color[2] = l;
+    s.env_color[3] = 1.0f;
+    s.combine_rgb = GL_ADD;
+    s.source_rgb[0] = GL_TEXTURE;
+    s.operand_rgb[0] = GL_SRC_COLOR;
+    s.source_rgb[1] = GL_CONSTANT;
+    s.operand_rgb[1] = GL_SRC_COLOR;
+    I_SectorCombinerTexturePasses();
+    I_SectorCombinerUniforms();
+}

@@ -64,6 +64,7 @@ void I_SectorCombiner_SetOperandRGB(int slot, int operand);
 void I_SectorCombiner_SetFog(int enabled, float r, float g, float b, float factor);
 void I_SectorCombiner_SetFogParams(int mode, float start, float end, float density);
 void I_SectorCombiner_Commit(void);
+void I_SectorCombiner_SetLightAdd(float lightlevel);
 int I_SectorCombiner_IsReady(void);
 
 #endif
